@@ -1,6 +1,6 @@
-# Lambda source (for fixing Bedrock model)
+# Lambda source (Bedrock summarization)
 
-This folder contains a copy of **LambdaFunctionSummarize** with the Bedrock model ID updated from the deprecated `amazon.titan-text-express-v1` to **`amazon.titan-text-premier-v1:0`** (Titan Text Premier) so `results.txt` is written again. If Premier is not available in your account, change the `modelId` in `lambda_function.py` to **`amazon.titan-text-lite-v1`** (Titan Text Lite).
+This folder contains **LambdaFunctionSummarize**, which uses **Amazon Nova** (Converse API) for summarization. Model: **`amazon.nova-lite-v1:0`**. To use a different Nova model (e.g. `amazon.nova-pro-v1:0`), change the `modelId` in `bedrock_summarisation()`.
 
 ## Deploy
 

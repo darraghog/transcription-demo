@@ -88,7 +88,7 @@ def extract_transcript_from_textract(file_content):
         
 
 def bedrock_summarisation(transcript):
-    
+    """Use Amazon Nova via Converse API for summarization."""
     with open('prompt_template.txt', "r") as file:
         template_string = file.read()
 
@@ -96,31 +96,25 @@ def bedrock_summarisation(transcript):
         'transcript': transcript,
         'topics': ['charges', 'location', 'availability']
     }
-    
+
     template = Template(template_string)
     prompt = template.render(data)
-    
-    print(prompt)
-    
-    kwargs = {
-        "modelId": "amazon.titan-text-premier-v1:0",
-        "contentType": "application/json",
-        "accept": "*/*",
-        "body": json.dumps(
-            {
-                "inputText": prompt,
-                "textGenerationConfig": {
-                    "maxTokenCount": 2048,
-                    "stopSequences": [],
-                    "temperature": 0,
-                    "topP": 0.9
-                }
-            }
-        )
-    }
-    
-    response = bedrock_runtime.invoke_model(**kwargs)
 
-    summary = json.loads(response.get('body').read()).get('results')[0].get('outputText')    
+    print(prompt)
+
+    response = bedrock_runtime.converse(
+        modelId="amazon.nova-lite-v1:0",
+        messages=[{
+            "role": "user",
+            "content": [{"text": prompt}]
+        }],
+        inferenceConfig={
+            "maxTokens": 2048,
+            "temperature": 0,
+            "topP": 0.9
+        }
+    )
+
+    summary = response["output"]["message"]["content"][0]["text"]
     return summary
     

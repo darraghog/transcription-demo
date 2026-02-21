@@ -19,17 +19,9 @@ The Lambda calls **Amazon Bedrock** with model ID **`amazon.titan-text-express-v
 
 Update the Lambda to use a **current** Bedrock text model ID.
 
-### 1. Change the model ID in the Lambda code
+### 1. Model: Amazon Nova (Converse API)
 
-In **`lambda_function.py`**, in `bedrock_summarisation()`, the model ID is set to one of the following (same request/response shape: `inputText`, `textGenerationConfig`, `results[0].outputText`):
-
-| Model ID | Name | Notes |
-|----------|------|--------|
-| **`amazon.titan-text-premier-v1:0`** | Titan Text Premier | Current default in this project; enable in Bedrock → Model access if needed. |
-| **`amazon.titan-text-lite-v1`** | Titan Text Lite | Lighter/cheaper; use if Premier is not available. |
-| **`amazon.titan-tg1-large`** | Titan Text Large | Alternative; may not be available in all regions. |
-
-The deprecated **`amazon.titan-text-express-v1`** must not be used (end-of-life).
+The Lambda uses **Amazon Nova** via the **Converse API** (not the legacy Titan InvokeModel API). Default model: **`amazon.nova-lite-v1:0`**. To use another Nova model (e.g. `amazon.nova-pro-v1:0`), change the `modelId` in `bedrock_summarisation()` in `lambda_function.py`.
 
 The existing request body (`inputText`, `textGenerationConfig`) and response parsing (`results[0].outputText`) work with these Titan Text models.
 
