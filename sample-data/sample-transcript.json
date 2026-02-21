@@ -1,0 +1,34 @@
+{
+  "results": {
+    "items": [
+      { "type": "pronunciation", "alternatives": [{ "content": "Hello" }], "speaker_label": "SPEAKER_00" },
+      { "type": "pronunciation", "alternatives": [{ "content": "thanks" }], "speaker_label": "SPEAKER_00" },
+      { "type": "pronunciation", "alternatives": [{ "content": "for" }], "speaker_label": "SPEAKER_00" },
+      { "type": "pronunciation", "alternatives": [{ "content": "calling" }], "speaker_label": "SPEAKER_00" },
+      { "type": "punctuation", "alternatives": [{ "content": "." }] },
+      { "type": "pronunciation", "alternatives": [{ "content": "How" }], "speaker_label": "SPEAKER_01" },
+      { "type": "pronunciation", "alternatives": [{ "content": "can" }], "speaker_label": "SPEAKER_01" },
+      { "type": "pronunciation", "alternatives": [{ "content": "I" }], "speaker_label": "SPEAKER_01" },
+      { "type": "pronunciation", "alternatives": [{ "content": "help" }], "speaker_label": "SPEAKER_01" },
+      { "type": "punctuation", "alternatives": [{ "content": "?" }] },
+      { "type": "pronunciation", "alternatives": [{ "content": "I" }], "speaker_label": "SPEAKER_00" },
+      { "type": "pronunciation", "alternatives": [{ "content": "was" }], "speaker_label": "SPEAKER_00" },
+      { "type": "pronunciation", "alternatives": [{ "content": "charged" }], "speaker_label": "SPEAKER_00" },
+      { "type": "pronunciation", "alternatives": [{ "content": "twice" }], "speaker_label": "SPEAKER_00" },
+      { "type": "pronunciation", "alternatives": [{ "content": "for" }], "speaker_label": "SPEAKER_00" },
+      { "type": "pronunciation", "alternatives": [{ "content": "the" }], "speaker_label": "SPEAKER_00" },
+      { "type": "pronunciation", "alternatives": [{ "content": "same" }], "speaker_label": "SPEAKER_00" },
+      { "type": "pronunciation", "alternatives": [{ "content": "service" }], "speaker_label": "SPEAKER_00" },
+      { "type": "punctuation", "alternatives": [{ "content": "." }] },
+      { "type": "pronunciation", "alternatives": [{ "content": "I" }], "speaker_label": "SPEAKER_01" },
+      { "type": "pronunciation", "alternatives": [{ "content": "apologize" }], "speaker_label": "SPEAKER_01" },
+      { "type": "punctuation", "alternatives": [{ "content": "," }] },
+      { "type": "pronunciation", "alternatives": [{ "content": "let" }], "speaker_label": "SPEAKER_01" },
+      { "type": "pronunciation", "alternatives": [{ "content": "me" }], "speaker_label": "SPEAKER_01" },
+      { "type": "pronunciation", "alternatives": [{ "content": "check" }], "speaker_label": "SPEAKER_01" },
+      { "type": "pronunciation", "alternatives": [{ "content": "your" }], "speaker_label": "SPEAKER_01" },
+      { "type": "pronunciation", "alternatives": [{ "content": "account" }], "speaker_label": "SPEAKER_01" },
+      { "type": "punctuation", "alternatives": [{ "content": "." }] }
+    ]
+  }
+}
