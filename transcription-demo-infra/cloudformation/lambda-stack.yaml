@@ -6,7 +6,7 @@ Description: "Transcription demo – S3 bucket, Lambda (Nova summarization), S3 
 Parameters:
   Instance:
     Type: String
-    Default: default
+    Default: dev
     Description: Instance name (must match infra-stack).
   SummarizeRoleArn:
     Type: String

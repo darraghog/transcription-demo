@@ -1,15 +1,30 @@
-# Infra stack: IAM role for the summarization Lambda. Deploy first.
-# No S3 bucket (bucket is in lambda-stack to avoid circular dependency).
+# Infra stack: IAM role for the summarization Lambda + S3 code bucket (Lambda zip). Deploy first.
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "Transcription demo – IAM role for Lambda (Bedrock + basic execution)."
+Description: "Transcription demo – IAM role for Lambda (Bedrock + basic execution) and code bucket for Lambda zip."
 
 Parameters:
   Instance:
     Type: String
-    Default: default
-    Description: Instance name (e.g. default, dev, prod).
+    Default: dev
+    Description: Instance name (e.g. dev, prod).
 
 Resources:
+  CodeBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Sub "code-bucket-${Instance}-${AWS::AccountId}"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
   SummarizeLambdaRole:
     Type: AWS::IAM::Role
     Properties:
@@ -45,6 +60,11 @@ Outputs:
     Value: !Ref Instance
     Export:
       Name: !Sub "TranscriptionDemo-${Instance}-Instance"
+  CodeBucketName:
+    Description: S3 bucket for Lambda deployment package (zip). Upload Lambda zip here before deploying Lambda stack.
+    Value: !Ref CodeBucket
+    Export:
+      Name: !Sub "TranscriptionDemo-${Instance}-CodeBucketName"
   SummarizeRoleArn:
     Description: IAM role ARN for the summarization Lambda.
     Value: !GetAtt SummarizeLambdaRole.Arn

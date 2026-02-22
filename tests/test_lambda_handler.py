@@ -58,7 +58,7 @@ def test_handler_success_returns_200_and_writes_results_txt():
     s3_mock.put_object.assert_called_once()
     call_kw = s3_mock.put_object.call_args.kwargs
     assert call_kw["Bucket"] == bucket
-    assert call_kw["Key"] == "results.txt"
+    assert call_kw["Key"] == "results/sample-transcript-results.txt"
     assert call_kw["Body"] == fake_summary
     assert call_kw["ContentType"] == "text/plain"
 

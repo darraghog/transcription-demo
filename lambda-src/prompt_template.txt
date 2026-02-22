@@ -4,25 +4,24 @@ I need to summarize a conversation. The transcript of the conversation is betwee
 {{transcript}}
 </data>
 
-The summary must contain a one word sentiment analysis, and a list of issues, problems or causes of friction
-during the conversation. The output must be provided in JSON format shown in the following example. 
+First, identify the main topics or themes discussed in the conversation. Each topic must be no more than 30 characters in length.
+
+The summary must contain a one-word sentiment analysis, and a list of issues, problems or causes of friction during the conversation. For each issue, assign a topic from the topics you identified (each topic string must be at most 30 characters).
+
+The output must be provided in JSON format shown in the following example.
 
 Example output:
 {
     "version": 0.1,
-    "sentiment": <sentiment>,
+    "sentiment": "<one word sentiment>",
+    "topics": ["<topic1>", "<topic2>"],
     "issues": [
         {
-            "topic": <topic>,
-            "summary": <issue_summary>,
+            "topic": "<topic from your list, max 30 chars>",
+            "summary": "<issue_summary>"
         }
     ]
 }
-
-An `issue_summary` must only be one of:
-{%- for topic in topics %}
- - `{{topic}}`
-{% endfor %}
 
 Write the JSON output and nothing more.
 

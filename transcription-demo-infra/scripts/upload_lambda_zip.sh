@@ -11,6 +11,7 @@ ZIP="$REPO_ROOT/.lambda_bundle.zip"
 die() { echo "Error: $*" >&2; exit 1; }
 
 [ -n "${CODE_BUCKET}" ] || die "Set CODE_BUCKET to the S3 bucket that will hold the Lambda zip (e.g. your deployment bucket)."
+aws s3api head-bucket --bucket "$CODE_BUCKET" 2>/dev/null || die "Bucket $CODE_BUCKET does not exist or you lack access. Create it or set CODE_BUCKET to an existing bucket."
 [ -f "$BUNDLE_DIR/lambda_function.py" ] || die "Run scripts/bundle_lambda.sh first."
 
 # Need zip or Python 3 for packaging

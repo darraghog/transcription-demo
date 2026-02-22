@@ -1,2 +1,2 @@
-aws-cdk-lib>=2.170.0
-constructs>=10.0.0
+# No Python dependencies; deploy is CloudFormation + bash scripts.
+# Python 3 + pip/uv are used by scripts/bundle_lambda.sh to install Lambda deps.

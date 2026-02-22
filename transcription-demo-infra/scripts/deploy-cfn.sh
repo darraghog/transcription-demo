@@ -1,22 +1,28 @@
 #!/usr/bin/env bash
-# Deploy transcription-demo infra using CloudFormation (no CDK). Reliable when CDK bootstrap/credentials are problematic.
+# Deploy transcription-demo infra using CloudFormation.
 # Prereqs: bundle and upload Lambda code (see README). Set CODE_BUCKET, CODE_S3_KEY; optionally INSTANCE, REGION, AWS_PROFILE.
 set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 CF_DIR="$REPO_ROOT/cloudformation"
-INSTANCE="${INSTANCE:-default}"
+INSTANCE="${INSTANCE:-dev}"
 REGION="${REGION:-us-east-1}"
 
 die() { echo "Error: $*" >&2; exit 1; }
 
 command -v aws >/dev/null 2>&1 || die "Install AWS CLI."
-[ -n "${CODE_BUCKET}" ] && [ -n "${CODE_S3_KEY}" ] || die "Set CODE_BUCKET and CODE_S3_KEY (run scripts/bundle_lambda.sh then scripts/upload_lambda_zip.sh)."
 [ -f "$CF_DIR/infra-stack.yaml" ] && [ -f "$CF_DIR/lambda-stack.yaml" ] || die "CloudFormation templates not found; run from repo root."
 aws sts get-caller-identity >/dev/null 2>&1 || die "Configure AWS credentials (e.g. AWS_PROFILE or aws configure)."
 
 INFRA_STACK="TranscriptionDemoInfra-${INSTANCE}"
 LAMBDA_STACK="TranscriptionDemoLambda-${INSTANCE}"
+
+# CODE_BUCKET: use infra stack output if not set (code bucket is created by infra stack)
+if [ -z "${CODE_BUCKET}" ]; then
+  CODE_BUCKET=$(aws cloudformation describe-stacks --stack-name "$INFRA_STACK" --region "$REGION" \
+    --query "Stacks[0].Outputs[?OutputKey=='CodeBucketName'].OutputValue" --output text 2>/dev/null) || true
+fi
+[ -n "${CODE_BUCKET}" ] && [ -n "${CODE_S3_KEY}" ] || die "Set CODE_BUCKET and CODE_S3_KEY (run scripts/bundle_lambda.sh then scripts/upload_lambda_zip.sh). Or deploy infra stack first so CODE_BUCKET is available from stack output."
 
 echo "Deploying infra stack: $INFRA_STACK"
 aws cloudformation deploy \

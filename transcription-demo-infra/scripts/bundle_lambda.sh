@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-# Bundle Lambda code + dependencies for CDK asset. Run before 'cdk deploy' when Lambda code or deps change.
+# Bundle Lambda code + dependencies for CloudFormation deploy. Run before upload_lambda_zip.sh when Lambda code or deps change.
 set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-LAMBDA_SRC="$REPO_ROOT/lambda"
+# Single Lambda source: app’s lambda-src (infra is transcription-demo-infra/ inside repo root)
+LAMBDA_SRC="${LAMBDA_SRC:-$REPO_ROOT/../lambda-src}"
 BUNDLE_DIR="$REPO_ROOT/.lambda_bundle"
 
 die() { echo "Error: $*" >&2; exit 1; }
@@ -23,10 +24,10 @@ if ! command -v uv >/dev/null 2>&1; then
   "$PYTHON" -m pip --version >/dev/null 2>&1 || die "Install pip (e.g. $PYTHON -m ensurepip) or uv."
 fi
 
-# Require lambda/ layout
-[ -d "$LAMBDA_SRC" ] || die "Run from repo root; lambda/ directory not found."
-[ -f "$LAMBDA_SRC/lambda_function.py" ] || die "lambda/lambda_function.py not found."
-[ -f "$LAMBDA_SRC/requirements.txt" ] || die "lambda/requirements.txt not found."
+# Require lambda-src layout (repo root is parent of transcription-demo-infra)
+[ -d "$LAMBDA_SRC" ] || die "lambda-src not found at $LAMBDA_SRC. Run from transcription-demo-infra (repo root must contain lambda-src)."
+[ -f "$LAMBDA_SRC/lambda_function.py" ] || die "lambda-src/lambda_function.py not found."
+[ -f "$LAMBDA_SRC/requirements.txt" ] || die "lambda-src/requirements.txt not found."
 
 rm -rf "$BUNDLE_DIR"
 mkdir -p "$BUNDLE_DIR"

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Full pipeline: upload audio to S3 → start Transcribe job (output to *-transcript.json)
-→ S3 triggers Lambda → Lambda writes results.txt. We wait and download results.txt.
+→ S3 triggers Lambda → Lambda writes results/<stem>-results.txt. We wait and download that file.
 """
 import argparse
 import os
@@ -12,10 +12,11 @@ from pathlib import Path
 
 import boto3
 
-DEFAULT_BUCKET = os.environ.get("TRANSCRIPTION_DEMO_BUCKET", "genai-training-bucket")
+DEFAULT_BUCKET = os.environ.get("TRANSCRIPTION_DEMO_BUCKET", "")
 AUDIO_PREFIX = "audio"
+BUCKET_HELP = "S3 bucket name (transcript bucket from TranscriptionDemoLambda stack). Set TRANSCRIPTION_DEMO_BUCKET or pass --bucket."
 TRANSCRIPT_PREFIX = "transcripts"
-RESULTS_KEY = "results.txt"
+RESULTS_PREFIX = "results/"
 REGION = "us-east-1"
 # Transcribe supported formats: wav, mp3, mp4, wb-amr, flac, ogg, amr, webm, m4a, etc.
 SUPPORTED_EXTENSIONS = {".wav", ".mp3", ".mp4", ".m4a", ".flac", ".ogg", ".webm", ".amr", ".wma"}
@@ -38,7 +39,7 @@ def main() -> None:
         "--wait-results-seconds",
         type=int,
         default=90,
-        help="Max seconds to wait for results.txt after Transcribe completes (default 90)",
+        help="Max seconds to wait for results file after Transcribe completes (default 90)",
     )
     parser.add_argument(
         "--region",
@@ -53,9 +54,19 @@ def main() -> None:
     parser.add_argument(
         "--bucket",
         default=DEFAULT_BUCKET,
-        help="S3 bucket name (default: TRANSCRIPTION_DEMO_BUCKET env or genai-training-bucket). Use for multi-instance.",
+        help=BUCKET_HELP,
     )
     args = parser.parse_args()
+
+    bucket = (args.bucket or "").strip()
+    if not bucket:
+        print(
+            "Error: bucket is required. Get BucketName from your TranscriptionDemoLambda stack output, then run:\n"
+            "  uv run python scripts/run_full_pipeline.py <audio.wav> --bucket <BucketName>\n"
+            "  or set TRANSCRIPTION_DEMO_BUCKET=<BucketName>",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
     audio_path = args.audio_path
     if not audio_path.exists():
@@ -73,7 +84,6 @@ def main() -> None:
     output_key = "%s/%s-transcript.json" % (TRANSCRIPT_PREFIX, job_name)
     s3_audio_key = "%s/%s%s" % (AUDIO_PREFIX, job_name, suffix)
 
-    bucket = args.bucket
     session = boto3.Session(profile_name=args.profile)
     s3 = session.client("s3", region_name=args.region)
     transcribe = session.client("transcribe", region_name=args.region)
@@ -106,20 +116,22 @@ def main() -> None:
             sys.exit(1)
         time.sleep(5)
 
-    print("Waiting for Lambda to run and write results.txt (up to %s s)..." % args.wait_results_seconds)
+    # Lambda writes to results/<transcript-stem>-results.txt
+    results_key = "%s%s-transcript-results.txt" % (RESULTS_PREFIX, job_name)
+    print("Waiting for Lambda to run and write %s (up to %s s)..." % (results_key, args.wait_results_seconds))
     start = time.time()
     while time.time() - start < args.wait_results_seconds:
         try:
-            resp = s3.get_object(Bucket=bucket, Key=RESULTS_KEY)
+            resp = s3.get_object(Bucket=bucket, Key=results_key)
             body = resp["Body"].read().decode("utf-8")
             elapsed = time.time() - start
-            print("\n--- results.txt (after %.1f s) ---\n%s" % (elapsed, body))
+            print("\n--- %s (after %.1f s) ---\n%s" % (results_key, elapsed, body))
             return
         except s3.exceptions.NoSuchKey:
             time.sleep(3)
             continue
 
-    print("Timeout: results.txt not found after %s seconds. Check Lambda logs or S3." % args.wait_results_seconds, file=sys.stderr)
+    print("Timeout: %s not found after %s seconds. Check Lambda logs or S3." % (results_key, args.wait_results_seconds), file=sys.stderr)
     sys.exit(1)
 
 

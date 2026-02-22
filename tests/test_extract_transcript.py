@@ -18,7 +18,7 @@ if _original_boto3 is not None:
 else:
     sys.modules.pop("boto3", None)
 
-extract = lambda_module.extract_transcript_from_textract
+extract = lambda_module.extract_transcript
 
 
 def test_empty_items_returns_empty_string():
