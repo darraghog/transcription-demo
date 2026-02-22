@@ -68,10 +68,42 @@ class LambdaStack(Stack):
             s3.NotificationKeyFilter(suffix=".json"),
         )
 
+        # Role for a user running the demo (transcript-only or full pipeline). Grant users sts:AssumeRole on this role to use it.
+        self.demo_runner_role = iam.Role(
+            self,
+            "DemoRunnerRole",
+            role_name=f"transcription-demo-{instance}-DemoRunner" if instance != "default" else "transcription-demo-DemoRunner",
+            assumed_by=iam.AccountPrincipal(self.account),
+            description="Assume this role to run the transcription demo (S3 + Transcribe). Grant users sts:AssumeRole on this role.",
+        )
+        self.demo_runner_role.add_to_principal_policy(
+            iam.PolicyStatement(
+                actions=["s3:GetObject*", "s3:PutObject*", "s3:ListBucket", "s3:GetBucketLocation"],
+                resources=[self.bucket.bucket_arn, self.bucket.arn_for_objects("*")],
+            )
+        )
+        self.demo_runner_role.add_to_principal_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "transcribe:StartTranscriptionJob",
+                    "transcribe:GetTranscriptionJob",
+                    "transcribe:ListTranscriptionJobs",
+                ],
+                resources=["*"],
+            )
+        )
+
         CfnOutput(
             self,
             "BucketName",
             value=self.bucket.bucket_name,
             description="S3 bucket for transcripts and results",
             export_name=f"TranscriptionDemo-BucketName-{instance}" if instance != "default" else None,
+        )
+        CfnOutput(
+            self,
+            "DemoRunnerRoleArn",
+            value=self.demo_runner_role.role_arn,
+            description="ARN of role to assume when running the demo. Grant users sts:AssumeRole on this role.",
+            export_name=f"TranscriptionDemo-DemoRunnerRoleArn-{instance}" if instance != "default" else None,
         )

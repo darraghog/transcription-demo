@@ -1,0 +1,152 @@
+# Lambda stack: S3 bucket, summarization Lambda, S3 trigger. Deploy after infra-stack.
+# Requires Lambda code zip uploaded to S3 (run scripts/bundle_lambda.sh then scripts/upload_lambda_zip.sh).
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Transcription demo – S3 bucket, Lambda (Nova summarization), S3 event."
+
+Parameters:
+  Instance:
+    Type: String
+    Default: default
+    Description: Instance name (must match infra-stack).
+  SummarizeRoleArn:
+    Type: String
+    Description: ARN of the Lambda IAM role from infra-stack (output SummarizeRoleArn).
+  CodeS3Bucket:
+    Type: String
+    Description: S3 bucket containing the Lambda code zip.
+  CodeS3Key:
+    Type: String
+    Description: S3 key of the Lambda code zip.
+  BucketName:
+    Type: String
+    Default: ""
+    Description: Optional fixed S3 bucket name. Leave empty to auto-generate.
+  Region:
+    Type: String
+    Default: us-east-1
+    Description: AWS region (used for BEDROCK_REGION in Lambda).
+
+Conditions:
+  UseCustomBucketName: !Not [!Equals [!Ref BucketName, ""]]
+
+Resources:
+  TranscriptBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !If [UseCustomBucketName, !Ref BucketName, !Sub "transcription-demo-${Instance}-${AWS::AccountId}"]
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  TranscriptBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref TranscriptBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowLambdaRole
+            Effect: Allow
+            Principal:
+              AWS: !Ref SummarizeRoleArn
+            Action:
+              - s3:GetObject*
+              - s3:PutObject*
+              - s3:DeleteObject*
+              - s3:GetBucket*
+              - s3:List*
+            Resource:
+              - !GetAtt TranscriptBucket.Arn
+              - !Sub "${TranscriptBucket.Arn}/*"
+
+  SummarizeFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "transcription-demo-${Instance}-Summarize"
+      Runtime: python3.11
+      Handler: lambda_function.lambda_handler
+      Role: !Ref SummarizeRoleArn
+      Code:
+        S3Bucket: !Ref CodeS3Bucket
+        S3Key: !Ref CodeS3Key
+      Timeout: 120
+      MemorySize: 128
+      Environment:
+        Variables:
+          BEDROCK_REGION: !Ref Region
+
+  BucketPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref SummarizeFunction
+      Action: lambda:InvokeFunction
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref AWS::AccountId
+      SourceArn: !GetAtt TranscriptBucket.Arn
+
+  # Role for a user running the demo. Grant users sts:AssumeRole on this role to use it.
+  DemoRunnerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "transcription-demo-${Instance}-DemoRunner"
+      Description: Assume this role to run the transcription demo (S3 + Transcribe). Grant users sts:AssumeRole on this role.
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action: sts:AssumeRole
+
+  DemoRunnerS3Policy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: DemoRunnerS3
+      Roles:
+        - !Ref DemoRunnerRole
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:GetObject*
+              - s3:PutObject*
+              - s3:ListBucket
+              - s3:GetBucketLocation
+            Resource:
+              - !GetAtt TranscriptBucket.Arn
+              - !Sub "${TranscriptBucket.Arn}/*"
+
+  DemoRunnerTranscribePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: DemoRunnerTranscribe
+      Roles:
+        - !Ref DemoRunnerRole
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - transcribe:StartTranscriptionJob
+              - transcribe:GetTranscriptionJob
+              - transcribe:ListTranscriptionJobs
+            Resource: "*"
+
+Outputs:
+  BucketName:
+    Description: S3 bucket for transcripts and results.
+    Value: !Ref TranscriptBucket
+    Export:
+      Name: !Sub "TranscriptionDemo-${Instance}-BucketName"
+  DemoRunnerRoleArn:
+    Description: ARN of role to assume when running the demo. Grant users sts:AssumeRole on this role.
+    Value: !GetAtt DemoRunnerRole.Arn
+    Export:
+      Name: !Sub "TranscriptionDemo-${Instance}-DemoRunnerRoleArn"

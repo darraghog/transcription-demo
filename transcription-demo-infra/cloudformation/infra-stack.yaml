@@ -1,0 +1,52 @@
+# Infra stack: IAM role for the summarization Lambda. Deploy first.
+# No S3 bucket (bucket is in lambda-stack to avoid circular dependency).
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Transcription demo – IAM role for Lambda (Bedrock + basic execution)."
+
+Parameters:
+  Instance:
+    Type: String
+    Default: default
+    Description: Instance name (e.g. default, dev, prod).
+
+Resources:
+  SummarizeLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "transcription-demo-${Instance}-SummarizeRole"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  SummarizeBedrockPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: BedrockInvoke
+      Roles:
+        - !Ref SummarizeLambdaRole
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - bedrock:InvokeModel
+              - bedrock:InvokeModelWithResponseStream
+            Resource: "*"
+
+Outputs:
+  Instance:
+    Description: Instance name (use with scripts --bucket or -c instance).
+    Value: !Ref Instance
+    Export:
+      Name: !Sub "TranscriptionDemo-${Instance}-Instance"
+  SummarizeRoleArn:
+    Description: IAM role ARN for the summarization Lambda.
+    Value: !GetAtt SummarizeLambdaRole.Arn
+    Export:
+      Name: !Sub "TranscriptionDemo-${Instance}-SummarizeRoleArn"
