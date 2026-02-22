@@ -1,0 +1,586 @@
+{
+  "configuration" : { },
+  "description" : "Audio → Transcribe → transcript JSON → Lambda (S3-triggered) → Bedrock Nova → results in S3.",
+  "documentation" : { },
+  "id" : 1,
+  "lastModifiedAgent" : "structurizr-ui",
+  "lastModifiedDate" : "2026-02-22T22:36:55Z",
+  "model" : {
+    "deploymentNodes" : [ {
+      "children" : [ {
+        "containerInstances" : [ {
+          "containerId" : "3",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Development",
+          "id" : "23",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "36c93091-b720-4160-911e-ed634d5ed476"
+          },
+          "relationships" : [ {
+            "description" : "S3 event on *-transcript.json",
+            "destinationId" : "25",
+            "id" : "27",
+            "linkedRelationshipId" : "14",
+            "sourceId" : "23"
+          } ],
+          "tags" : "Container Instance"
+        } ],
+        "description" : "Transcript bucket",
+        "environment" : "Development",
+        "id" : "22",
+        "instances" : "1",
+        "name" : "S3",
+        "properties" : {
+          "structurizr.dsl.identifier" : "368a905b-1589-4cf1-81fb-d38dcaafb6bf"
+        },
+        "tags" : "Element,Deployment Node,Amazon Web Services - S3",
+        "technology" : "S3"
+      }, {
+        "containerInstances" : [ {
+          "containerId" : "4",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Development",
+          "id" : "25",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "98247fda-ed2d-4d45-baeb-c9cfec3146c3"
+          },
+          "relationships" : [ {
+            "description" : "Reads transcript, writes results/<stem>-results.txt",
+            "destinationId" : "23",
+            "id" : "26",
+            "linkedRelationshipId" : "15",
+            "sourceId" : "25"
+          } ],
+          "tags" : "Container Instance"
+        } ],
+        "description" : "Summarization function",
+        "environment" : "Development",
+        "id" : "24",
+        "instances" : "1",
+        "name" : "Lambda",
+        "properties" : {
+          "structurizr.dsl.identifier" : "66be3047-ff6c-4704-b2e1-735f82db3f0a"
+        },
+        "tags" : "Element,Deployment Node,Amazon Web Services - Lambda",
+        "technology" : "AWS Lambda"
+      } ],
+      "description" : "us-east-1",
+      "environment" : "Development",
+      "id" : "21",
+      "instances" : "1",
+      "name" : "AWS",
+      "properties" : {
+        "structurizr.dsl.identifier" : "46bac4c9-a0e6-4c20-bba9-1eaf85d426de"
+      },
+      "tags" : "Element,Deployment Node,Amazon Web Services - Region",
+      "technology" : "Amazon Web Services"
+    }, {
+      "children" : [ {
+        "containerInstances" : [ {
+          "containerId" : "3",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Production",
+          "id" : "30",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "4d12b197-0c12-4e6f-aeba-f9f450b046f2"
+          },
+          "relationships" : [ {
+            "description" : "S3 event on *-transcript.json",
+            "destinationId" : "32",
+            "id" : "34",
+            "linkedRelationshipId" : "14",
+            "sourceId" : "30"
+          } ],
+          "tags" : "Container Instance"
+        } ],
+        "description" : "Transcript bucket",
+        "environment" : "Production",
+        "id" : "29",
+        "instances" : "1",
+        "name" : "S3",
+        "properties" : {
+          "structurizr.dsl.identifier" : "cd773874-2729-4404-9b16-2b7faf6f9f4e"
+        },
+        "tags" : "Element,Deployment Node,Amazon Web Services - S3",
+        "technology" : "S3"
+      }, {
+        "containerInstances" : [ {
+          "containerId" : "4",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Production",
+          "id" : "32",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "4430b03c-a334-490a-829d-4d1fd6109d90"
+          },
+          "relationships" : [ {
+            "description" : "Reads transcript, writes results/<stem>-results.txt",
+            "destinationId" : "30",
+            "id" : "33",
+            "linkedRelationshipId" : "15",
+            "sourceId" : "32"
+          } ],
+          "tags" : "Container Instance"
+        } ],
+        "description" : "Summarization function",
+        "environment" : "Production",
+        "id" : "31",
+        "instances" : "1",
+        "name" : "Lambda",
+        "properties" : {
+          "structurizr.dsl.identifier" : "a59cd28e-0458-4f28-a7e4-01ff87cfff9e"
+        },
+        "tags" : "Element,Deployment Node,Amazon Web Services - Lambda",
+        "technology" : "AWS Lambda"
+      } ],
+      "description" : "us-east-1",
+      "environment" : "Production",
+      "id" : "28",
+      "instances" : "1",
+      "name" : "AWS",
+      "properties" : {
+        "structurizr.dsl.identifier" : "38344be9-c15a-4001-adc8-da4478484175"
+      },
+      "tags" : "Element,Deployment Node,Amazon Web Services - Region",
+      "technology" : "Amazon Web Services"
+    } ],
+    "people" : [ {
+      "description" : "Uploads audio or sample transcripts via run_full_pipeline.py / run_transcript_only.py; retrieves results from S3.",
+      "id" : "1",
+      "name" : "User",
+      "properties" : {
+        "structurizr.dsl.identifier" : "user"
+      },
+      "relationships" : [ {
+        "description" : "Uploads audio, retrieves results",
+        "destinationId" : "2",
+        "id" : "11",
+        "sourceId" : "1",
+        "tags" : "Relationship"
+      } ],
+      "tags" : "Element,Person"
+    } ],
+    "softwareSystems" : [ {
+      "containers" : [ {
+        "description" : "S3 bucket for audio/, transcripts/*-transcript.json, and results/<stem>-results.txt. Receives Transcribe output; triggers Lambda on new *-transcript.json.",
+        "documentation" : { },
+        "id" : "3",
+        "name" : "Transcript bucket",
+        "properties" : {
+          "structurizr.dsl.identifier" : "s3"
+        },
+        "relationships" : [ {
+          "description" : "S3 event on *-transcript.json",
+          "destinationId" : "4",
+          "id" : "14",
+          "sourceId" : "3",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "Amazon S3"
+      }, {
+        "components" : [ {
+          "description" : "Parses S3 event, delegates to extract and summarize, writes result to S3.",
+          "documentation" : { },
+          "id" : "5",
+          "name" : "Handler",
+          "properties" : {
+            "structurizr.dsl.identifier" : "handler"
+          },
+          "relationships" : [ {
+            "description" : "Delegates load",
+            "destinationId" : "6",
+            "id" : "17",
+            "sourceId" : "5",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "extract_transcript(): loads JSON from S3, returns speaker-labeled text.",
+          "documentation" : { },
+          "id" : "6",
+          "name" : "TranscriptReader",
+          "properties" : {
+            "structurizr.dsl.identifier" : "transcriptReader"
+          },
+          "relationships" : [ {
+            "description" : "Passes transcript text",
+            "destinationId" : "7",
+            "id" : "18",
+            "sourceId" : "6",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "bedrock_summarisation(): builds prompt from template, calls Bedrock Converse API (amazon.nova-lite-v1:0), returns summary text.",
+          "documentation" : { },
+          "id" : "7",
+          "name" : "Summarizer",
+          "properties" : {
+            "structurizr.dsl.identifier" : "summarizer"
+          },
+          "relationships" : [ {
+            "description" : "Passes summary",
+            "destinationId" : "8",
+            "id" : "19",
+            "sourceId" : "7",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Writes summary to S3 at results/<stem>-results.txt (text/plain).",
+          "documentation" : { },
+          "id" : "8",
+          "name" : "ResultWriter",
+          "properties" : {
+            "structurizr.dsl.identifier" : "resultWriter"
+          },
+          "relationships" : [ {
+            "description" : "put_object",
+            "destinationId" : "3",
+            "id" : "20",
+            "sourceId" : "8",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component"
+        } ],
+        "description" : "Triggered by S3 on new *-transcript.json. Reads transcript, calls Bedrock (Nova), writes results/<stem>-results.txt.",
+        "documentation" : { },
+        "id" : "4",
+        "name" : "Summarization Lambda",
+        "properties" : {
+          "structurizr.dsl.identifier" : "lambda"
+        },
+        "relationships" : [ {
+          "description" : "Reads transcript, writes results/<stem>-results.txt",
+          "destinationId" : "3",
+          "id" : "15",
+          "sourceId" : "4",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Converse API (Nova)",
+          "destinationId" : "10",
+          "id" : "16",
+          "sourceId" : "4",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "AWS Lambda"
+      } ],
+      "description" : "Orchestrates audio upload, Transcribe jobs, and Lambda summarization; stores audio, transcripts, and results in S3.",
+      "documentation" : { },
+      "id" : "2",
+      "name" : "Transcription Demo",
+      "properties" : {
+        "structurizr.dsl.identifier" : "sys"
+      },
+      "relationships" : [ {
+        "description" : "Starts transcription job; job writes transcript JSON to S3",
+        "destinationId" : "9",
+        "id" : "12",
+        "sourceId" : "2",
+        "tags" : "Relationship"
+      }, {
+        "description" : "Lambda invokes model for summarization",
+        "destinationId" : "10",
+        "id" : "13",
+        "sourceId" : "2",
+        "tags" : "Relationship"
+      } ],
+      "tags" : "Element,Software System"
+    }, {
+      "description" : "Speech-to-text. Job output (transcripts/*-transcript.json) is written to the demo S3 bucket.",
+      "documentation" : { },
+      "id" : "9",
+      "name" : "Amazon Transcribe",
+      "properties" : {
+        "structurizr.dsl.identifier" : "transcribe"
+      },
+      "tags" : "Element,Software System"
+    }, {
+      "description" : "Nova Converse API used by Lambda for summarization.",
+      "documentation" : { },
+      "id" : "10",
+      "name" : "Amazon Bedrock",
+      "properties" : {
+        "structurizr.dsl.identifier" : "bedrock"
+      },
+      "tags" : "Element,Software System"
+    } ]
+  },
+  "name" : "Transcription Demo",
+  "properties" : {
+    "structurizr.inspection.info" : "0",
+    "structurizr.inspection.ignore" : "0",
+    "structurizr.inspection.error" : "17",
+    "structurizr.inspection.warning" : "0",
+    "structurizr.dsl" : "LyoKICogVHJhbnNjcmlwdGlvbiBEZW1vIOKAkyBhcmNoaXRlY3R1cmUgYXMgU3RydWN0dXJpenIgRFNMIChDNCBtb2RlbCkuCiAqIFNpbmdsZSBzb3VyY2Ugb2YgdHJ1dGggZm9yIHN5c3RlbSBjb250ZXh0LCBjb250YWluZXIsIGNvbXBvbmVudCwgYW5kIGRlcGxveW1lbnQgZGlhZ3JhbXMuCiAqIEV4cG9ydCB0byBNZXJtYWlkIC8gUGxhbnRVTUwgLyBEcmF3LmlvIHZpYSBTdHJ1Y3R1cml6ciBDTEkgKHNlZSBkb2NzL2FyY2hpdGVjdHVyZS9SRUFETUUubWQpLgogKi8Kd29ya3NwYWNlICJUcmFuc2NyaXB0aW9uIERlbW8iICJBdWRpbyDihpIgVHJhbnNjcmliZSDihpIgdHJhbnNjcmlwdCBKU09OIOKGkiBMYW1iZGEgKFMzLXRyaWdnZXJlZCkg4oaSIEJlZHJvY2sgTm92YSDihpIgcmVzdWx0cyBpbiBTMy4iIHsKCiAgICBtb2RlbCB7CiAgICAgICAgLyogLS0tLS0tLS0tLSBQZW9wbGUgLS0tLS0tLS0tLSAqLwogICAgICAgIHVzZXIgPSBwZXJzb24gIlVzZXIiICJVcGxvYWRzIGF1ZGlvIG9yIHNhbXBsZSB0cmFuc2NyaXB0cyB2aWEgcnVuX2Z1bGxfcGlwZWxpbmUucHkgLyBydW5fdHJhbnNjcmlwdF9vbmx5LnB5OyByZXRyaWV2ZXMgcmVzdWx0cyBmcm9tIFMzLiIKCiAgICAgICAgLyogLS0tLS0tLS0tLSBTb2Z0d2FyZSBzeXN0ZW0gLS0tLS0tLS0tLSAqLwogICAgICAgIHN5cyA9IHNvZnR3YXJlU3lzdGVtICJUcmFuc2NyaXB0aW9uIERlbW8iICJPcmNoZXN0cmF0ZXMgYXVkaW8gdXBsb2FkLCBUcmFuc2NyaWJlIGpvYnMsIGFuZCBMYW1iZGEgc3VtbWFyaXphdGlvbjsgc3RvcmVzIGF1ZGlvLCB0cmFuc2NyaXB0cywgYW5kIHJlc3VsdHMgaW4gUzMuIiB7CiAgICAgICAgICAgIHMzID0gY29udGFpbmVyICJUcmFuc2NyaXB0IGJ1Y2tldCIgIlMzIGJ1Y2tldCBmb3IgYXVkaW8vLCB0cmFuc2NyaXB0cy8qLXRyYW5zY3JpcHQuanNvbiwgYW5kIHJlc3VsdHMvPHN0ZW0+LXJlc3VsdHMudHh0LiBSZWNlaXZlcyBUcmFuc2NyaWJlIG91dHB1dDsgdHJpZ2dlcnMgTGFtYmRhIG9uIG5ldyAqLXRyYW5zY3JpcHQuanNvbi4iICJBbWF6b24gUzMiCiAgICAgICAgICAgIGxhbWJkYSA9IGNvbnRhaW5lciAiU3VtbWFyaXphdGlvbiBMYW1iZGEiICJUcmlnZ2VyZWQgYnkgUzMgb24gbmV3ICotdHJhbnNjcmlwdC5qc29uLiBSZWFkcyB0cmFuc2NyaXB0LCBjYWxscyBCZWRyb2NrIChOb3ZhKSwgd3JpdGVzIHJlc3VsdHMvPHN0ZW0+LXJlc3VsdHMudHh0LiIgIkFXUyBMYW1iZGEiIHsKICAgICAgICAgICAgICAgIGhhbmRsZXIgPSBjb21wb25lbnQgIkhhbmRsZXIiICJQYXJzZXMgUzMgZXZlbnQsIGRlbGVnYXRlcyB0byBleHRyYWN0IGFuZCBzdW1tYXJpemUsIHdyaXRlcyByZXN1bHQgdG8gUzMuIgogICAgICAgICAgICAgICAgdHJhbnNjcmlwdFJlYWRlciA9IGNvbXBvbmVudCAiVHJhbnNjcmlwdFJlYWRlciIgImV4dHJhY3RfdHJhbnNjcmlwdCgpOiBsb2FkcyBKU09OIGZyb20gUzMsIHJldHVybnMgc3BlYWtlci1sYWJlbGVkIHRleHQuIgogICAgICAgICAgICAgICAgc3VtbWFyaXplciA9IGNvbXBvbmVudCAiU3VtbWFyaXplciIgImJlZHJvY2tfc3VtbWFyaXNhdGlvbigpOiBidWlsZHMgcHJvbXB0IGZyb20gdGVtcGxhdGUsIGNhbGxzIEJlZHJvY2sgQ29udmVyc2UgQVBJIChhbWF6b24ubm92YS1saXRlLXYxOjApLCByZXR1cm5zIHN1bW1hcnkgdGV4dC4iCiAgICAgICAgICAgICAgICByZXN1bHRXcml0ZXIgPSBjb21wb25lbnQgIlJlc3VsdFdyaXRlciIgIldyaXRlcyBzdW1tYXJ5IHRvIFMzIGF0IHJlc3VsdHMvPHN0ZW0+LXJlc3VsdHMudHh0ICh0ZXh0L3BsYWluKS4iCiAgICAgICAgICAgIH0KICAgICAgICB9CgogICAgICAgIC8qIC0tLS0tLS0tLS0gRXh0ZXJuYWwgc3lzdGVtcyAtLS0tLS0tLS0tICovCiAgICAgICAgdHJhbnNjcmliZSA9IHNvZnR3YXJlU3lzdGVtICJBbWF6b24gVHJhbnNjcmliZSIgIlNwZWVjaC10by10ZXh0LiBKb2Igb3V0cHV0ICh0cmFuc2NyaXB0cy8qLXRyYW5zY3JpcHQuanNvbikgaXMgd3JpdHRlbiB0byB0aGUgZGVtbyBTMyBidWNrZXQuIgogICAgICAgIGJlZHJvY2sgPSBzb2Z0d2FyZVN5c3RlbSAiQW1hem9uIEJlZHJvY2siICJOb3ZhIENvbnZlcnNlIEFQSSB1c2VkIGJ5IExhbWJkYSBmb3Igc3VtbWFyaXphdGlvbi4iCgogICAgICAgIC8qIC0tLS0tLS0tLS0gQ29udGV4dCByZWxhdGlvbnNoaXBzIC0tLS0tLS0tLS0gKi8KICAgICAgICB1c2VyIC0+IHN5cyAiVXBsb2FkcyBhdWRpbywgcmV0cmlldmVzIHJlc3VsdHMiCiAgICAgICAgc3lzIC0+IHRyYW5zY3JpYmUgIlN0YXJ0cyB0cmFuc2NyaXB0aW9uIGpvYjsgam9iIHdyaXRlcyB0cmFuc2NyaXB0IEpTT04gdG8gUzMiCiAgICAgICAgc3lzIC0+IGJlZHJvY2sgIkxhbWJkYSBpbnZva2VzIG1vZGVsIGZvciBzdW1tYXJpemF0aW9uIgoKICAgICAgICAvKiAtLS0tLS0tLS0tIENvbnRhaW5lciByZWxhdGlvbnNoaXBzIC0tLS0tLS0tLS0gKi8KICAgICAgICBzMyAtPiBsYW1iZGEgIlMzIGV2ZW50IG9uICotdHJhbnNjcmlwdC5qc29uIgogICAgICAgIGxhbWJkYSAtPiBzMyAiUmVhZHMgdHJhbnNjcmlwdCwgd3JpdGVzIHJlc3VsdHMvPHN0ZW0+LXJlc3VsdHMudHh0IgogICAgICAgIGxhbWJkYSAtPiBiZWRyb2NrICJDb252ZXJzZSBBUEkgKE5vdmEpIgoKICAgICAgICAvKiAtLS0tLS0tLS0tIENvbXBvbmVudCByZWxhdGlvbnNoaXBzIC0tLS0tLS0tLS0gKi8KICAgICAgICBoYW5kbGVyIC0+IHRyYW5zY3JpcHRSZWFkZXIgIkRlbGVnYXRlcyBsb2FkIgogICAgICAgIHRyYW5zY3JpcHRSZWFkZXIgLT4gc3VtbWFyaXplciAiUGFzc2VzIHRyYW5zY3JpcHQgdGV4dCIKICAgICAgICBzdW1tYXJpemVyIC0+IHJlc3VsdFdyaXRlciAiUGFzc2VzIHN1bW1hcnkiCiAgICAgICAgcmVzdWx0V3JpdGVyIC0+IHMzICJwdXRfb2JqZWN0IgoKICAgICAgICAvKiAtLS0tLS0tLS0tIERlcGxveW1lbnQ6IERldmVsb3BtZW50IC0tLS0tLS0tLS0gKi8KICAgICAgICAvKiBUYWdzIG1hdGNoIFN0cnVjdHVyaXpyIEFXUyB0aGVtZSBmb3Igc3RhbmRhcmQgaWNvbnMgaW4gTGl0ZS9DbG91ZCAoc2VlIEFXUy1ERVBMT1lNRU5ULURJQUdSQU0tU1RBTkRBUkRTLm1kKS4gKi8KICAgICAgICBkZXYgPSBkZXBsb3ltZW50RW52aXJvbm1lbnQgIkRldmVsb3BtZW50IiB7CiAgICAgICAgICAgIGRlcGxveW1lbnROb2RlICJBV1MiICJ1cy1lYXN0LTEiICJBbWF6b24gV2ViIFNlcnZpY2VzIiB7CiAgICAgICAgICAgICAgICB0YWdzICJBbWF6b24gV2ViIFNlcnZpY2VzIC0gUmVnaW9uIgogICAgICAgICAgICAgICAgZGVwbG95bWVudE5vZGUgIlMzIiAiVHJhbnNjcmlwdCBidWNrZXQiICJTMyIgewogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkFtYXpvbiBXZWIgU2VydmljZXMgLSBTMyIKICAgICAgICAgICAgICAgICAgICBjb250YWluZXJJbnN0YW5jZSBzMwogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgZGVwbG95bWVudE5vZGUgIkxhbWJkYSIgIlN1bW1hcml6YXRpb24gZnVuY3Rpb24iICJBV1MgTGFtYmRhIiB7CiAgICAgICAgICAgICAgICAgICAgdGFncyAiQW1hem9uIFdlYiBTZXJ2aWNlcyAtIExhbWJkYSIKICAgICAgICAgICAgICAgICAgICBjb250YWluZXJJbnN0YW5jZSBsYW1iZGEKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQogICAgICAgIH0KCiAgICAgICAgLyogLS0tLS0tLS0tLSBEZXBsb3ltZW50OiBQcm9kdWN0aW9uIC0tLS0tLS0tLS0gKi8KICAgICAgICBwcm9kID0gZGVwbG95bWVudEVudmlyb25tZW50ICJQcm9kdWN0aW9uIiB7CiAgICAgICAgICAgIGRlcGxveW1lbnROb2RlICJBV1MiICJ1cy1lYXN0LTEiICJBbWF6b24gV2ViIFNlcnZpY2VzIiB7CiAgICAgICAgICAgICAgICB0YWdzICJBbWF6b24gV2ViIFNlcnZpY2VzIC0gUmVnaW9uIgogICAgICAgICAgICAgICAgZGVwbG95bWVudE5vZGUgIlMzIiAiVHJhbnNjcmlwdCBidWNrZXQiICJTMyIgewogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkFtYXpvbiBXZWIgU2VydmljZXMgLSBTMyIKICAgICAgICAgICAgICAgICAgICBjb250YWluZXJJbnN0YW5jZSBzMwogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgZGVwbG95bWVudE5vZGUgIkxhbWJkYSIgIlN1bW1hcml6YXRpb24gZnVuY3Rpb24iICJBV1MgTGFtYmRhIiB7CiAgICAgICAgICAgICAgICAgICAgdGFncyAiQW1hem9uIFdlYiBTZXJ2aWNlcyAtIExhbWJkYSIKICAgICAgICAgICAgICAgICAgICBjb250YWluZXJJbnN0YW5jZSBsYW1iZGEKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQogICAgICAgIH0KICAgIH0KCiAgICB2aWV3cyB7CiAgICAgICAgc3lzdGVtQ29udGV4dCBzeXMgIlN5c3RlbUNvbnRleHQiICJUcmFuc2NyaXB0aW9uIERlbW8gaW4gY29udGV4dC4iIHsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGF1dG9MYXlvdXQgdGIKICAgICAgICB9CgogICAgICAgIGNvbnRhaW5lciBzeXMgIkNvbnRhaW5lcnMiICJDb250YWluZXJzOiBTMyBidWNrZXQgYW5kIExhbWJkYS4iIHsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGF1dG9MYXlvdXQgdGIKICAgICAgICB9CgogICAgICAgIGNvbXBvbmVudCBsYW1iZGEgIkNvbXBvbmVudHMiICJJbnNpZGUgdGhlIFN1bW1hcml6YXRpb24gTGFtYmRhLiIgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgYXV0b0xheW91dCBscgogICAgICAgIH0KCiAgICAgICAgZGVwbG95bWVudCBzeXMgZGV2ICJEZXBsb3ltZW50LURldmVsb3BtZW50IiAiRGV2ZWxvcG1lbnQgZGVwbG95bWVudCAodHJhbnNjcmlwdGlvbi1kZW1vLWluZnJhKS4iIHsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGF1dG9MYXlvdXQgbHIKICAgICAgICB9CgogICAgICAgIGRlcGxveW1lbnQgc3lzIHByb2QgIkRlcGxveW1lbnQtUHJvZHVjdGlvbiIgIlByb2R1Y3Rpb24gZGVwbG95bWVudCAodHJhbnNjcmlwdGlvbi1kZW1vLWluZnJhKS4iIHsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGF1dG9MYXlvdXQgbHIKICAgICAgICB9CgogICAgICAgIC8qIEFXUyB0aGVtZTogc3RhbmRhcmQgaWNvbnMgKGFuZCBjb2xvdXJzKSBpbiBTdHJ1Y3R1cml6ciBMaXRlL0Nsb3VkLiBFeHBvcnRzIChNZXJtYWlkL1BsYW50VU1MKSBkbyBub3QgYXBwbHkgdGhlbWUuICovCiAgICAgICAgdGhlbWUgaHR0cHM6Ly9zdGF0aWMuc3RydWN0dXJpenIuY29tL3RoZW1lcy9hbWF6b24td2ViLXNlcnZpY2VzLTIwMjMuMDEuMzEvdGhlbWUuanNvbgogICAgfQp9"
+  },
+  "views" : {
+    "componentViews" : [ {
+      "automaticLayout" : {
+        "applied" : true,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "containerId" : "4",
+      "description" : "Inside the Summarization Lambda.",
+      "dimensions" : {
+        "height" : 938,
+        "width" : 3910
+      },
+      "elements" : [ {
+        "id" : "3",
+        "x" : 3240,
+        "y" : 183
+      }, {
+        "id" : "5",
+        "x" : 240,
+        "y" : 183
+      }, {
+        "id" : "6",
+        "x" : 990,
+        "y" : 183
+      }, {
+        "id" : "7",
+        "x" : 1740,
+        "y" : 183
+      }, {
+        "id" : "8",
+        "x" : 2490,
+        "y" : 183
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "Components",
+      "name" : "Component View: Transcription Demo - Summarization Lambda",
+      "order" : 3,
+      "relationships" : [ {
+        "id" : "17"
+      }, {
+        "id" : "18"
+      }, {
+        "id" : "19"
+      }, {
+        "id" : "20"
+      } ]
+    } ],
+    "configuration" : {
+      "branding" : { },
+      "lastSavedView" : "Containers",
+      "metadataSymbols" : "SquareBrackets",
+      "styles" : { },
+      "terminology" : { },
+      "themes" : [ "https://static.structurizr.com/themes/amazon-web-services-2023.01.31/theme.json" ]
+    },
+    "containerViews" : [ {
+      "automaticLayout" : {
+        "applied" : true,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "description" : "Containers: S3 bucket and Lambda.",
+      "dimensions" : {
+        "height" : 1920,
+        "width" : 890
+      },
+      "elements" : [ {
+        "id" : "3",
+        "x" : 220,
+        "y" : 162
+      }, {
+        "id" : "4",
+        "x" : 220,
+        "y" : 762
+      }, {
+        "id" : "10",
+        "x" : 220,
+        "y" : 1362
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "key" : "Containers",
+      "name" : "Container View: Transcription Demo",
+      "order" : 2,
+      "relationships" : [ {
+        "id" : "14",
+        "vertices" : [ {
+          "x" : 295,
+          "y" : 612
+        } ]
+      }, {
+        "id" : "15",
+        "vertices" : [ {
+          "x" : 595,
+          "y" : 612
+        } ]
+      }, {
+        "id" : "16"
+      } ],
+      "softwareSystemId" : "2"
+    } ],
+    "deploymentViews" : [ {
+      "automaticLayout" : {
+        "applied" : true,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "description" : "Development deployment (transcription-demo-infra).",
+      "dimensions" : {
+        "height" : 956,
+        "width" : 1680
+      },
+      "elements" : [ {
+        "id" : "21",
+        "x" : 175,
+        "y" : 175
+      }, {
+        "id" : "22",
+        "x" : 175,
+        "y" : 175
+      }, {
+        "id" : "23",
+        "x" : 240,
+        "y" : 200
+      }, {
+        "id" : "24",
+        "x" : 175,
+        "y" : 175
+      }, {
+        "id" : "25",
+        "x" : 990,
+        "y" : 200
+      } ],
+      "environment" : "Development",
+      "key" : "Deployment-Development",
+      "name" : "Deployment View: Transcription Demo - Development",
+      "order" : 4,
+      "relationships" : [ {
+        "id" : "26",
+        "vertices" : [ {
+          "x" : 840,
+          "y" : 200
+        } ]
+      }, {
+        "id" : "27",
+        "vertices" : [ {
+          "x" : 840,
+          "y" : 500
+        } ]
+      } ],
+      "softwareSystemId" : "2"
+    }, {
+      "automaticLayout" : {
+        "applied" : true,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "description" : "Production deployment (transcription-demo-infra).",
+      "dimensions" : {
+        "height" : 956,
+        "width" : 1680
+      },
+      "elements" : [ {
+        "id" : "28",
+        "x" : 175,
+        "y" : 175
+      }, {
+        "id" : "29",
+        "x" : 175,
+        "y" : 175
+      }, {
+        "id" : "30",
+        "x" : 240,
+        "y" : 200
+      }, {
+        "id" : "31",
+        "x" : 175,
+        "y" : 175
+      }, {
+        "id" : "32",
+        "x" : 990,
+        "y" : 200
+      } ],
+      "environment" : "Production",
+      "key" : "Deployment-Production",
+      "name" : "Deployment View: Transcription Demo - Production",
+      "order" : 5,
+      "relationships" : [ {
+        "id" : "33",
+        "vertices" : [ {
+          "x" : 840,
+          "y" : 200
+        } ]
+      }, {
+        "id" : "34",
+        "vertices" : [ {
+          "x" : 840,
+          "y" : 500
+        } ]
+      } ],
+      "softwareSystemId" : "2"
+    } ],
+    "systemContextViews" : [ {
+      "automaticLayout" : {
+        "applied" : true,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "description" : "Transcription Demo in context.",
+      "dimensions" : {
+        "height" : 1900,
+        "width" : 1600
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 575,
+        "y" : 143
+      }, {
+        "id" : "2",
+        "x" : 575,
+        "y" : 743
+      }, {
+        "id" : "9",
+        "x" : 950,
+        "y" : 1343
+      }, {
+        "id" : "10",
+        "x" : 200,
+        "y" : 1343
+      } ],
+      "enterpriseBoundaryVisible" : true,
+      "key" : "SystemContext",
+      "name" : "System Context View: Transcription Demo",
+      "order" : 1,
+      "relationships" : [ {
+        "id" : "11"
+      }, {
+        "id" : "12"
+      }, {
+        "id" : "13"
+      } ],
+      "softwareSystemId" : "2"
+    } ]
+  }
+}

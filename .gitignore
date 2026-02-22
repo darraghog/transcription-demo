@@ -11,3 +11,7 @@ __pycache__/
 deploy.zip
 results.txt
 .env
+.structurizr
+
+# Generated diagram exports (Structurizr → Mermaid/PlantUML)
+docs/architecture/output/

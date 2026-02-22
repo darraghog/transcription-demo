@@ -4,6 +4,8 @@ Demonstrates the full pipeline for **LambdaFunctionSummarize**: audio → Amazon
 
 ## Architecture
 
+See **[docs/architecture/](docs/architecture/README.md)** for C4-style diagrams (system context, container, component, deployment) and how to generate Mermaid/PlantUML/Draw.io from the Structurizr source.
+
 ```
 ┌─────────────┐     upload      ┌─────────────┐    Transcribe job     ┌──────────────────┐
 │  Your .wav  │ ──────────────► │     S3      │ ───────────────────► │ *-transcript.json│
@@ -126,7 +128,8 @@ transcription-demo/
 ├── README.md                 # This file
 ├── pyproject.toml            # Project and deps (uv sync / uv run)
 ├── requirements.txt          # Optional; same deps for pip users
-├── lambda-src/               # Lambda source (Nova summarization); infra bundles from here
+├── docs/                     # Migration, runbooks, unit test notes
+├── lambda-src/                # Lambda source (Nova summarization); infra bundles from here
 │   ├── lambda_function.py
 │   ├── prompt_template.txt
 │   └── requirements.txt
@@ -136,6 +139,7 @@ transcription-demo/
 │   ├── run_tests.sh             # Run unit tests + full pipeline on new files from audio dir
 │   ├── run_transcript_only.py   # Upload sample transcript, fetch results/<stem>-results.txt
 │   └── run_full_pipeline.py     # Upload audio → Transcribe → wait → fetch results file
+├── tests/                      # Unit tests (pytest)
 └── transcription-demo-infra/   # IaC (CloudFormation) and deploy scripts
 ```
 

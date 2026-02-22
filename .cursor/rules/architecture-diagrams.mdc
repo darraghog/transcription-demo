@@ -1,0 +1,60 @@
+---
+description: Architecture diagram guidance using C4 model and Structurizr; AWS deployment conventions
+globs: "**/*.dsl,**/structurizr/**/*,**/architecture/**/*.md,**/docs/architecture/**"
+alwaysApply: false
+---
+
+# Architecture diagrams (C4 + AWS)
+
+## When to apply
+
+Use this rule when creating or editing architecture diagrams, Structurizr DSL (`.dsl`) files, or docs under `architecture/` / `docs/architecture/`.
+
+## Single source of truth
+
+- Define architecture in **Structurizr DSL** (`.dsl`) as the single source of truth.
+- Export to Mermaid, PlantUML, or Draw.io using the scripts in `architecture-diagram-guidance/scripts/` (or project-local equivalents).
+
+## C4 best practices
+
+**System context (Level 1)**
+- One diagram per system; system as a single box.
+- Show only: users, this system, external systems. No internals.
+- Use active relationship labels (e.g. "sends transcripts to", "invokes") not "connects to".
+- Keep readable in under 30 seconds; 5–9 elements typical.
+
+**Container (Level 2)**
+- One diagram per system: deployable units (web app, API, DB, workers).
+- Most useful for planning and operations; most teams need only context + container.
+- Label technology (e.g. "Lambda", "S3", "PostgreSQL").
+
+**Component (Level 3)**
+- Zoom into one container; show cohesive modules, not individual classes.
+- Use only for critical or complex containers.
+- Prefer one component diagram per container that needs it.
+
+**Deployment**
+- Show mapping of containers onto infrastructure (regions, nodes, managed services) and **external services** used by deployed components: in Structurizr add **infrastructure nodes** for each external AWS service (e.g. Transcribe, Bedrock) in the deployment environment and relate them from the container(s) that call them; tag with AWS theme for icons.
+- Use cloud provider conventions (see below).
+
+## AWS deployment diagram conventions
+
+- Name deployment environments clearly (e.g. "Development", "Production").
+- Model AWS concepts as deployment nodes: Region → service (e.g. Lambda, S3, RDS). Use `deploymentNode`; put `containerInstance` on the node that runs that container.
+- **Structurizr (Lite/Cloud):** Tag deployment nodes with the AWS theme format `Amazon Web Services - <Service>` (e.g. `Amazon Web Services - S3`, `Amazon Web Services - Lambda`) and add `theme https://static.structurizr.com/themes/amazon-web-services-2023.01.31/theme.json` to views so standard AWS icons render.
+- **Mermaid / PlantUML / Draw.io:** Use icon sets per renderer (Iconify logos for Mermaid; awslabs/aws-icons-for-plantuml for PlantUML; Draw.io built-in AWS shapes). See **AWS-DEPLOYMENT-DIAGRAM-STANDARDS.md** in architecture-diagram-guidance for full standards and rendering.
+
+## Structurizr DSL habits
+
+- Use `workspace`, `model`, then `views`; define people and software systems before containers and deployment.
+- Create views explicitly: `systemContext`, `container`, `component`, `deployment * <environment>`.
+- Use `include *` or explicit `include`/`exclude` to control what appears in each view.
+- Add `autoLayout` (e.g. `tb` or `lr`) for consistent export layout.
+
+## Export and rendering
+
+- **Mermaid**: Set `"securityLevel": "loose"` in Mermaid config for Structurizr exports.
+- **PlantUML**: Prefer `plantuml/c4plantuml` format; use AWS PlantUML icon includes for deployment diagrams.
+- **Draw.io**: Use PlantUML or Mermaid export then Draw.io’s Insert > Advanced > PlantUML / Mermaid; attach AWS shape libraries as needed.
+
+See `architecture-diagram-guidance/` (or project docs) for full best practices, example workspace, and export scripts.

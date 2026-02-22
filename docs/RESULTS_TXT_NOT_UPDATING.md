@@ -1,5 +1,7 @@
 # Why results.txt Was Not Updating
 
+**Status:** Fix applied. The Lambda uses Amazon Nova via the Converse API (`amazon.nova-lite-v1:0`). This doc is kept as a runbook for the same class of issue (e.g. model end-of-life).
+
 ## Investigation summary (Feb 2026)
 
 - **S3:** `results.txt` last modified **2024-12-15** (confirmed via `head-object`).
@@ -25,13 +27,13 @@ The Lambda uses **Amazon Nova** via the **Converse API** (`bedrock_runtime.conve
 
 ### 2. Redeploy the Lambda
 
-- **Console:** Open the summarization function (e.g. LambdaFunctionSummarize or `transcription-demo-*-Summarize`) → Code → ensure model ID is current → Deploy.
-- **CLI (original infra):** Zip `lambda_function.py` + `prompt_template.txt` from `lambda-src/` and run:
+- **Console:** Open the summarization function (e.g. `transcription-demo-dev-Summarize` or legacy `LambdaFunctionSummarize`) → Code → ensure model ID is current → Deploy.
+- **CLI (original/legacy infra):** Zip `lambda_function.py` and `prompt_template.txt` from `lambda-src/`, then:
 
   ```bash
   aws lambda update-function-code --function-name LambdaFunctionSummarize --zip-file fileb://deploy.zip --profile administrator
   ```
 
-- **transcription-demo-infra:** Run `./scripts/bundle_lambda.sh` (from `transcription-demo-infra`) then `upload_lambda_zip.sh` and `deploy-cfn.sh` to deploy the Lambda stack via CloudFormation. The bundle is built from `lambda-src/`.
+- **transcription-demo-infra (recommended):** From repo root run `make deploy`, or from `transcription-demo-infra`: `./scripts/bundle_lambda.sh`, then `./scripts/upload_lambda_zip.sh`, then `./scripts/deploy-cfn.sh`. The bundle is built from `lambda-src/`.
 
-After redeploying, new transcript uploads will invoke the Lambda, Bedrock will succeed, and the Lambda will write an updated **results.txt** to S3.
+After redeploying, new transcript uploads will invoke the Lambda, Bedrock will succeed, and the Lambda will write an updated **results.txt** (or `results/<stem>-results.txt`) to S3.
